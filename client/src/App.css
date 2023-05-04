@@ -1,3 +1,7 @@
+body,html{
+  height: 100% !important;
+}
+
 .App {
   text-align: center;
 }

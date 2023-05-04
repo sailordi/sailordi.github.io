@@ -1,0 +1,17 @@
+body {
+   background-color: lightgray;
+}
+
+#userData,#pass {
+    margin-right: 10%;
+    margin-bottom: 10%;
+}
+  
+#userData,#pass { 
+    text-align: center; 
+    width: 200px !important;
+}
+
+#userData,#pass,#userDataL,#passL { 
+    font-size: large;
+}
