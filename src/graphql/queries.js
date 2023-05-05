@@ -1,6 +1,6 @@
-export const GET_USER = `query {
-    user(where: { id: { _eq: $id }}) {
+export function GET_USER(id) { return `query {
+    user(where: { id: { _eq: "${id}" }}) {
         login
         auditRatio
     }
-  }`
+  }`}

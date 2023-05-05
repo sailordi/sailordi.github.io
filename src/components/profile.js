@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { GET_USER } from '../graphql/queries';
 
-
 function parseJwt (token) {
     var base64Url = token.split('.')[1];
     var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -37,17 +36,13 @@ class ProfilePage extends React.Component {
         const token = localStorage.getItem('token')
         const id = parseJwt(token).sub
 
-        const result = await customFetch(token,`query {
-                user(where: { id: { _eq: "${id}" }}) {
-                    login
-                    auditRatio
-                }
-            }`
-        );
+        const result = await customFetch(token,GET_USER(id) );
+
         let data = {
             id: id,
             result: result.json()
         }
+        
         console.log("Result: ",result.json().data())
         this.setState({ data });
     }
