@@ -1,0 +1,24 @@
+#welcomeL {
+    font-size:x-large;
+    margin-right: 1%; 
+    font-weight: bold;
+}
+
+#topBar {
+    text-align: center;
+    margin-bottom: 5%;
+}
+
+#baseInfo {
+    float: left;
+    font-size: large;
+}
+
+#firstNameL,#lastNameL,#emailL,#idL {
+    display: flex;
+    margin-bottom: 1%;
+}
+
+#emailL {
+    margin-bottom: 6%;
+}

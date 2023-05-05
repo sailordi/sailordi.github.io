@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {Data} from '../const';
 import axios from 'axios';
-import '../App.css';
 import '../auth.css';
 
 function LoginPage() {

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { GET_USER } from '../graphql/queries';
+import React, { Component } from 'react';
+import { GET_DATA } from '../graphql/queries';
+import '../profile.css';
 
 function parseJwt (token) {
     var base64Url = token.split('.')[1];
@@ -24,33 +25,54 @@ async function customFetch(token,query) {
     return res
 }
 
-class ProfilePage extends React.Component {
+class ProfilePage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          data: []
+          user: []
         };
     };
+
+    handleLogout = () => {
+        localStorage.removeItem('token');
+        const { navigate } = this.props;
+        navigate("/");
+    }
     
     async componentDidMount() {
         const token = localStorage.getItem('token')
         const id = parseJwt(token).sub
 
-        const result = await customFetch(token,GET_USER(id) );
+        const response = await customFetch(token,GET_DATA(id) );
 
-        let data = {
+        let result = await response.json()
+        let u = result.data.user[0]
+
+        let user = {
             id: id,
-            result: result.json()
+            login: u.login,
+            firstName: u.firstName,
+            lastName: u.lastName,
+            email: u.email,
+            auditRatio: u.auditRatio.toFixed(1)
         }
-        
-        console.log("Result: ",result.json().data())
-        this.setState({ data });
+
+        this.setState({ user });
     }
 
   render() {
     return (
         <div>
-            <label>Your id {this.state.data.id}</label>
+            <div id="topBar">
+                <label id="welcomeL">Welcome to Your Graphql data {this.state.user.login}</label>
+                <button onClick={this.handleLogout}>Logout</button>
+            </div>
+            <div id="baseInfo">
+                <label id="firstNameL">First name: {this.state.user.firstName}</label>
+                <label id="lastNameL">Last name: {this.state.user.lastName}</label>
+                <label id="emailL">Email: {this.state.user.email}</label>
+                <label id="idL">Id {this.state.user.id}</label>
+            </div>
             
         </div>
     );

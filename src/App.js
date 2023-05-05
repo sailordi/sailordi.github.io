@@ -2,14 +2,14 @@ import './App.css';
 import './components/auth'
 import { Routes, Route } from 'react-router-dom';
 import LoginPage from './components/auth';
-import ProfilePage from './components/profile';
+import ProfilePageWrapper from './components/profileWrapper';
 
 function App() {
   return (
         <div className="App">
           <Routes>
             <Route path="/" element={<LoginPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile" element={<ProfilePageWrapper />} />
           </Routes>
         </div>
     );
