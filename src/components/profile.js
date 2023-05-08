@@ -1,36 +1,15 @@
 import React, { Component } from 'react';
 import { GET_DATA } from '../graphql/queries';
-
+import {customFetch,parseJwt} from '../utility/utility'
+import { PieChart } from "react-minimal-pie-chart";
+import { getRandomColor } from '../utility/color';
 import '../profile.css';
-
-function parseJwt (token) {
-    var base64Url = token.split('.')[1];
-    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-  
-    return JSON.parse(jsonPayload);
-}
-
-async function customFetch(token,query) {
-    const res = await fetch("https://01.gritlab.ax/api/graphql-engine/v1/graphql",{
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-        body: JSON.stringify({ query: query }),
-    })
-
-    return res
-}
 
 class ProfilePage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          user: []
+          user: {}
         };
     };
 
@@ -40,6 +19,38 @@ class ProfilePage extends Component {
         navigate("/");
     }
     
+    async piechart(rawData) {
+        if(typeof rawData === 'undefined' || !Array.isArray(rawData)) {
+            return [
+                { title: "Fuck", value: 25, color: "#E38627" },
+                { title: "Cats", value: 35, color: "#C13C37" },
+                { title: "Birds", value: 20, color: "#6A2135" },
+                { title: "Fish", value: 10, color: "#FF7F50" },
+                { title: "Other", value: 10, color: "#00FFFF" },
+            ]
+        }
+
+
+
+        let total = rawData.reduce((a, c) => {
+            return a + c.amount
+        },0)
+
+        let data = []
+    
+        for(let i = 0; i < rawData.length; i++) {
+            let d = rawData[i]
+            let p = (d.amount/total)*100
+            let l = d.name
+            let c = getRandomColor()
+
+            console.log(l,p)
+
+            data.push({title:l,value: p, color: c})
+        }
+        return data
+    }
+
     async componentDidMount() {
         const token = localStorage.getItem('token')
         const id = parseJwt(token).sub
@@ -86,6 +97,8 @@ class ProfilePage extends Component {
             }
         }
         
+        let skillChartData = await this.piechart(skillA)
+
         let user = {
             login: u.login,
             firstName: u.firstName,
@@ -93,28 +106,43 @@ class ProfilePage extends Component {
             email: u.email,
             auditRatio: u.auditRatio.toFixed(1),
             xp: (xp/1000).toFixed(0),
-            skills: skillStr
+            skills: skillChartData,
+            skillsStr: skillStr
         }
 
         this.setState({ user });
     }
 
   render() {
+    let u = this.state.user
     return (
         <div>
             <div id="topBar">
-                <label id="welcomeL">Welcome to Your Graphql data {this.state.user.login}</label>
+                <label id="welcomeL">Welcome to Your Graphql data {u.login}</label>
                 <button onClick={this.handleLogout}>Logout</button>
             </div>
             <div id="baseInfo">
-                <label id="firstNameL" className="baseL">First name: {this.state.user.firstName}</label>
-                <label id="lastNameL" className="baseL">Last name: {this.state.user.lastName}</label>
-                <label id="emailL" className="baseL">Email: {this.state.user.email}</label>
-                <label id="auditRatioL" className="baseL">Audit ratio: {this.state.user.auditRatio}</label>
-                <label id="xpL" className="baseL">Xp: {this.state.user.xp} kB</label>
-                <label id="skillsL" className="baseL">Skills: {this.state.user.skills}</label>
+                <label id="firstNameL" className="baseL">First name: {u.firstName}</label>
+                <label id="lastNameL" className="baseL">Last name: {u.lastName}</label>
+                <label id="emailL" className="baseL">Email: {u.email}</label>
+                <label id="auditRatioL" className="baseL">Audit ratio: {u.auditRatio}</label>
+                <label id="xpL" className="baseL">Xp: {u.xp} kB</label>
+                <label id="skillsL" className="baseL">Skills: {u.skillsStr}</label>
             </div>
             <div id="skillChart">
+                <h3 id="skillChartL">Skills chart</h3>
+                <PieChart
+                    className='chart'
+                    data={u.skills}
+                    lineWidth={20}
+                    paddingAngle={3}
+                    radius={40}
+                    viewBoxSize={[300, 300]}
+                    center={[57, 60]}
+                    label={({ dataEntry }) => `${dataEntry.title}: ${dataEntry.value.toFixed(2)}%`}
+                    labelPosition={105}
+                    labelStyle={{ fontSize: '0.2em' }}
+                />
             </div>
             
         </div>

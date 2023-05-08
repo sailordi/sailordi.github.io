@@ -22,3 +22,29 @@
 #emailL {
     margin-bottom: 6%;
 }
+
+#skillChart {
+    width:100em;
+    height: 100em;
+    display:flex;
+    position: relative;
+    top: 1em;
+    left: 0;
+    z-index: 1;
+}
+
+#skillChartL {
+    width: 30em;
+    height: 1em;
+    z-index: 2;
+    left: 0;
+    display:flex;
+    position: relative;
+    justify-content: center;
+}
+
+.chart {
+    z-index: 3;
+    left: 0;
+    position: absolute;
+}
