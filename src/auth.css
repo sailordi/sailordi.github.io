@@ -15,3 +15,26 @@ body {
 #userData,#pass,#userDataL,#passL { 
     font-size: large;
 }
+
+#error {
+    margin-bottom: 5%;
+    color: darkred;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+@keyframes blink {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+    100% {
+      opacity: 1;
+    }
+}
+  
+.blink {
+    animation: blink 1s infinite;
+}

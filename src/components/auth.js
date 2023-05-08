@@ -36,14 +36,14 @@ function LoginPage() {
 
             navigate('/profile');
         } catch (error) {
-            setError(error.response.data.message);
+          setError(error.response.data.error);
         }
     
     };
   
     return (
         <div>
-          {error && <div>{error}</div>}
+          {error && <div id="error">{error}</div>}
           <form onSubmit={handleSubmit}>
             <label id="userDataL">Username/Email: </label>
             <input
