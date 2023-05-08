@@ -121,14 +121,21 @@ class ProfilePage extends Component {
                 <label id="welcomeL">Welcome to Your Graphql data {u.login}</label>
                 <button onClick={this.handleLogout}>Logout</button>
             </div>
-            <div id="baseInfo">
-                <label id="firstNameL" className="baseL">First name: {u.firstName}</label>
-                <label id="lastNameL" className="baseL">Last name: {u.lastName}</label>
-                <label id="emailL" className="baseL">Email: {u.email}</label>
-                <label id="auditRatioL" className="baseL">Audit ratio: {u.auditRatio}</label>
-                <label id="xpL" className="baseL">Xp: {u.xp} kB</label>
-                <label id="skillsL" className="baseL">Skills: {u.skillsStr}</label>
+            <div id="infoDiv">
+                <div id="baseInfo" class="info">
+                    <label id="firstNameL" className="baseL">First name: {u.firstName}</label>
+                    <label id="lastNameL" className="baseL">Last name: {u.lastName}</label>
+                    <label id="emailL" className="baseL">Email: {u.email}</label>
+                </div>
+                <div id="xpInfo" class="info">
+                    <label id="auditRatioL" className="baseL">Audit ratio: {u.auditRatio}</label>
+                    <label id="xpL" className="baseL">Xp: {u.xp} kB</label>
+                </div>
+                <div id="skillInfo" class="info">
+                    <label id="skillsL" className="baseL">Skills: {u.skillsStr}</label>  
+                </div>
             </div>
+
             <div id="skillChart">
                 <h3 id="skillChartL">Skills chart</h3>
                 <PieChart

@@ -6,21 +6,21 @@
 
 #topBar {
     text-align: center;
-    margin-bottom: 5%;
+    margin-bottom: 1%;
 }
 
-#baseInfo {
+#info {
     float: left;
     font-size: large;
+}
+
+.info {
+    margin-bottom: 2%;
 }
 
 .baseL {
     display: flex;
     margin-bottom: 1%;
-}
-
-#emailL {
-    margin-bottom: 6%;
 }
 
 #skillChart {
