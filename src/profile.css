@@ -14,7 +14,7 @@
     font-size: large;
 }
 
-#firstNameL,#lastNameL,#emailL,#idL {
+.baseL {
     display: flex;
     margin-bottom: 1%;
 }

@@ -1,5 +1,5 @@
-export function GET_DATA(id) { return `query {
-    user(where: { id: { _eq: "${id}" }}) {
+export function GET_DATA(id) { return ` query {
+    user(where: { id: { _eq: "${id}"}}) {
         id
         login
         firstName
@@ -7,4 +7,11 @@ export function GET_DATA(id) { return `query {
         email
         auditRatio
     }
-  }`}
+    transaction {
+        userId
+        type
+        amount
+        path
+        attrs
+    }
+}`}
