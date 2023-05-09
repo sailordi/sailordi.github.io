@@ -8,6 +8,7 @@ export function GET_DATA(id) { return ` query {
         auditRatio
     }
     transaction {
+        createdAt
         userId
         type
         amount

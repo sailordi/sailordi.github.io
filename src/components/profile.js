@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { GET_DATA } from '../graphql/queries';
-import {customFetch,parseJwt} from '../utility/utility'
-import { PieChart } from "react-minimal-pie-chart";
+import {customFetch,parseJwt,transactionName,normalize} from '../utility/utility'
 import { getRandomColor } from '../utility/color';
+import SkillChart from "./skillChart"
+import TransactionChart from "./transactionChart"
 import '../profile.css';
 
 class ProfilePage extends Component {
@@ -18,37 +19,62 @@ class ProfilePage extends Component {
         const { navigate } = this.props;
         navigate("/");
     }
-    
-    async piechart(rawData) {
-        if(typeof rawData === 'undefined' || !Array.isArray(rawData)) {
-            return [
-                { title: "Fuck", value: 25, color: "#E38627" },
-                { title: "Cats", value: 35, color: "#C13C37" },
-                { title: "Birds", value: 20, color: "#6A2135" },
-                { title: "Fish", value: 10, color: "#FF7F50" },
-                { title: "Other", value: 10, color: "#00FFFF" },
-            ]
+
+    collectSkillChartData(skills) {
+        let skillA = []
+
+        for(let i = 0; i < skills.length; i++) {
+            let s = skills[i]
+            let t = s.type.replace("skill_","")
+
+            if(skillA.filter(s => s.name == t).length <= 0) {
+                skillA.push({name:t,amount:s.amount})
+            }
+            else {
+                let o = skillA.find(s => s.name === t)
+                o.amount += s.amount
+            }
+        } 
+        return skillA
+    }
+
+    skillsToString(skills) {
+        let skillStr = ""
+
+        for(let i = 0; i < skills.length; i++) {
+            let t = skills[i]
+
+            if(i+1 >= skills.length) {
+                skillStr += t.name
+            } else {
+                skillStr += t.name+", "
+            }
+        }
+        return skillStr
+    }
+
+    collectTransactionChartData(transactions) {
+        let ret = {
+            array:[],
+            max:0,
+            min:0
         }
 
+        ret.max = transactions.reduce((prev, current) => (prev.amount > current.amount) ? prev : current);
+        ret.min = transactions.reduce((prev, current) => (prev.amount < current.amount) ? prev : current);
 
+        ret.max = ret.max.amount
+        ret.min = ret.min.amount
 
-        let total = rawData.reduce((a, c) => {
-            return a + c.amount
-        },0)
+        transactions.sort( (a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
-        let data = []
-    
-        for(let i = 0; i < rawData.length; i++) {
-            let d = rawData[i]
-            let p = (d.amount/total)*100
-            let l = d.name
-            let c = getRandomColor()
-
-            console.log(l,p)
-
-            data.push({title:l,value: p, color: c})
+        for(let i = 0; i < transactions.length; i++) {
+            let t = transactions[i]
+        
+            ret.array.push({name:transactionName(t.path),XP:t.amount})
         }
-        return data
+
+        return ret
     }
 
     async componentDidMount() {
@@ -66,38 +92,12 @@ class ProfilePage extends Component {
                                 t.path.includes("school-curriculum") == true && 
                                 t.path.includes("piscine-js/") == false &&
                                 t.attrs.hasOwnProperty("auditId") == false) 
+        let trasactionChartData = this.collectTransactionChartData(xpTransactions)
 
-        let xp = xpTransactions.reduce((a, c) => {
-            return a + c.amount
-        },0)
+        let xp = xpTransactions.reduce((a, c) => {return a + c.amount},0)
 
-        let skillA = []
-
-        for(let i = 0; i < skills.length; i++) {
-            let s = skills[i]
-            let t = s.type.replace("skill_","")
-
-            if(skillA.filter(s => s.name == t).length <= 0) {
-                skillA.push({name:t,amount:s.amount})
-            }
-            else {
-                let o = skillA.find(s => s.name === t)
-                o.amount += s.amount
-            }
-        } 
-
-        let skillStr = ""
-
-        for(let i = 0; i < skillA.length; i++) {
-            let t = skillA[i]
-            if(i+1 >= skillA.length) {
-                skillStr += t.name
-            } else {
-                skillStr += t.name+", "
-            }
-        }
-        
-        let skillChartData = await this.piechart(skillA)
+        let skillA = this.collectSkillChartData(skills)
+        let skillStr = this.skillsToString(skillA)
 
         let user = {
             login: u.login,
@@ -106,55 +106,47 @@ class ProfilePage extends Component {
             email: u.email,
             auditRatio: u.auditRatio.toFixed(1),
             xp: (xp/1000).toFixed(0),
-            skills: skillChartData,
-            skillsStr: skillStr
+            skills: skillA,
+            skillsStr: skillStr,
+            chartData: trasactionChartData.array,
+            chartMax: trasactionChartData.max,
+            chartMin: trasactionChartData.min
         }
 
         this.setState({ user });
     }
 
-  render() {
-    let u = this.state.user
-    return (
-        <div>
-            <div id="topBar">
-                <label id="welcomeL">Welcome to Your Graphql data {u.login}</label>
-                <button onClick={this.handleLogout}>Logout</button>
-            </div>
-            <div id="infoDiv">
-                <div id="baseInfo" class="info">
-                    <label id="firstNameL" className="baseL">First name: {u.firstName}</label>
-                    <label id="lastNameL" className="baseL">Last name: {u.lastName}</label>
-                    <label id="emailL" className="baseL">Email: {u.email}</label>
+    render() {
+        let u = this.state.user
+        return (
+            <div>
+                <div id="topBar">
+                    <label id="welcomeL">Welcome to Your Graphql data {u.login}</label>
+                    <button onClick={this.handleLogout}>Logout</button>
                 </div>
-                <div id="xpInfo" class="info">
-                    <label id="auditRatioL" className="baseL">Audit ratio: {u.auditRatio}</label>
-                    <label id="xpL" className="baseL">Xp: {u.xp} kB</label>
+                <div id="infoDiv">
+                    <div id="baseInfo" className="info">
+                        <label id="firstNameL" className="baseL">First name: {u.firstName}</label>
+                        <label id="lastNameL" className="baseL">Last name: {u.lastName}</label>
+                        <label id="emailL" className="baseL">Email: {u.email}</label>
+                    </div>
+                    <div id="xpInfo" className="info">
+                        <label id="auditRatioL" className="baseL">Audit ratio: {u.auditRatio}</label>
+                        <label id="xpL" className="baseL">Xp: {u.xp} kB</label>
+                    </div>
+                    <div id="skillInfo" className="info">
+                        <label id="skillsL" className="baseL">Skills: {u.skillsStr}</label>  
+                    </div>
                 </div>
-                <div id="skillInfo" class="info">
-                    <label id="skillsL" className="baseL">Skills: {u.skillsStr}</label>  
+                <div className='charts'>
+                    <SkillChart rawData={u.skills}/>
+                    <TransactionChart chart={{class: "transactionChart",divClass: "TransactionD",labelClass: "transactionL",labelText:"XP earned by project"}} 
+                        width={900} height={500} data={u.chartData} color={getRandomColor()}
+                    />
                 </div>
             </div>
-
-            <div id="skillChart">
-                <h3 id="skillChartL">Skills chart</h3>
-                <PieChart
-                    className='chart'
-                    data={u.skills}
-                    lineWidth={20}
-                    paddingAngle={3}
-                    radius={40}
-                    viewBoxSize={[300, 300]}
-                    center={[57, 60]}
-                    label={({ dataEntry }) => `${dataEntry.title}: ${dataEntry.value.toFixed(2)}%`}
-                    labelPosition={105}
-                    labelStyle={{ fontSize: '0.2em' }}
-                />
-            </div>
-            
-        </div>
-    );
-  }
+        );
+    }
 
 }
 

@@ -20,3 +20,17 @@ export async function customFetch(token,query) {
 
     return res
 }
+
+export function transactionName(name) {
+    let n = name.split("/")
+
+        return n[n.length-1]
+}
+
+export function normalize(value,min,max) {
+    return (value - min) / (max - min);
+}
+
+export function denormalize(value,min,max) {
+    return (value * (max - min) + min);
+}
