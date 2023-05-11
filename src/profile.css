@@ -30,9 +30,10 @@ body {
     width:100em;
     height: 100em;
     display:flex;
+    float: right;
     position: relative;
-    top: 1em;
-    left: 0;
+    top: -13em;
+    right: -38em;
     z-index: 1;
 }
 
@@ -48,9 +49,9 @@ body {
 }
 
 .charts{
-    display: flex;
-    float: left;
     position: relative;
+    display:flex;
+    flex-direction: column;
 }
 
 .skillPiechart {
@@ -61,10 +62,10 @@ body {
 }
 
 .TransactionD {
-    position: absolute;
-    display: flex;
-    float: right;
-    top: 3em;
+    position: relative;
+    top: -80em;
+    width: 2080px;
+    height: 500px;
 }
 
 .transactionChart {
@@ -78,7 +79,7 @@ body {
     top: 0;
     margin-bottom: -1em;
     z-index: 2;
-    right: -46em;
+    right: -16em;
     display:flex;
     position: relative;
     justify-content: center;

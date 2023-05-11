@@ -141,7 +141,7 @@ class ProfilePage extends Component {
                 <div className='charts'>
                     <SkillChart rawData={u.skills}/>
                     <TransactionChart chart={{class: "transactionChart",divClass: "TransactionD",labelClass: "transactionL",labelText:"XP earned by project"}} 
-                        width={900} height={500} data={u.chartData} color={getRandomColor()}
+                        data={u.chartData} color={getRandomColor()}
                     />
                 </div>
             </div>
