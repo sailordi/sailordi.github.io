@@ -12,6 +12,7 @@ function SkillChart({rawData}) {
 
     if(typeof rawData !== 'undefined' && Array.isArray(rawData)) {
         data = []
+        let colors = []
 
         let total = rawData.reduce((a, c) => {
             return a + c.amount
@@ -21,10 +22,17 @@ function SkillChart({rawData}) {
             let d = rawData[i]
             let p = (d.amount/total)*100
             let l = d.name
-            let c = getRandomColor()
+            let c = getRandomColor(colors)
+
+            while(colors.includes(c) ) {
+                c = getRandomColor(colors)    
+            }
+            
+            colors.push(c)
     
             data.push({title:l,value: p, color: c})
         }
+
     }
 
     return (
