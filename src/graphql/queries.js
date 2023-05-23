@@ -6,6 +6,8 @@ export function GET_DATA(id) { return ` query {
         lastName
         email
         auditRatio
+        totalUp
+        totalDown
     }
     transaction {
         createdAt

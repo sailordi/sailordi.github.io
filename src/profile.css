@@ -32,7 +32,7 @@ body {
     display:flex;
     float: right;
     position: relative;
-    top: -13em;
+    top: -15em;
     right: -38em;
     z-index: 1;
 }
@@ -63,11 +63,18 @@ body {
 
 .TransactionD {
     position: relative;
-    top: -74em;
+    top: -115em;
     width: 2080px;
     height: 500px;
 }
 
+.AuditD {
+    position: relative;
+    top: -115em;
+    left: 86em;
+    width: 500px;
+    height: 500px;
+}
 .transactionChart {
     top: 5em;
     z-index: 4;

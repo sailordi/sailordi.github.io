@@ -4,6 +4,7 @@ import {customFetch,parseJwt,transactionName,normalize} from '../utility/utility
 import { getRandomColor } from '../utility/color';
 import SkillChart from "./skillChart"
 import TransactionChart from "./transactionChart"
+import AuditChart from './auditChart';
 import '../profile.css';
 
 class ProfilePage extends Component {
@@ -54,24 +55,15 @@ class ProfilePage extends Component {
     }
 
     collectTransactionChartData(transactions) {
-        let ret = {
-            array:[],
-            max:0,
-            min:0
-        }
+        let ret = []
 
-        ret.max = transactions.reduce((prev, current) => (prev.amount > current.amount) ? prev : current);
-        ret.min = transactions.reduce((prev, current) => (prev.amount < current.amount) ? prev : current);
-
-        ret.max = ret.max.amount
-        ret.min = ret.min.amount
 
         transactions.sort( (a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
         for(let i = 0; i < transactions.length; i++) {
             let t = transactions[i]
         
-            ret.array.push({name:transactionName(t.path),XP:t.amount})
+            ret.push({name:transactionName(t.path),XP:t.amount})
         }
 
         return ret
@@ -84,8 +76,8 @@ class ProfilePage extends Component {
         const response = await customFetch(token,GET_DATA(id) );
 
         let result = await response.json()
-
         let u = result.data.user[0]
+
         let transactions = result.data.transaction
         let skills = transactions.filter(t => t.type.includes("skill") === true)
         let xpTransactions = transactions.filter(t => t.type === "xp" && 
@@ -108,9 +100,8 @@ class ProfilePage extends Component {
             xp: (xp/1000).toFixed(0),
             skills: skillA,
             skillsStr: skillStr,
-            chartData: trasactionChartData.array,
-            chartMax: trasactionChartData.max,
-            chartMin: trasactionChartData.min
+            chartData: trasactionChartData,
+            auditData:[{name:"Recived",value:u.totalDown/1000000},{name:"Done",value:u.totalUp/1000000}]
         }
 
         this.setState({ user });
@@ -118,6 +109,9 @@ class ProfilePage extends Component {
 
     render() {
         let u = this.state.user
+
+        console.log(u)
+
         return (
             <div>
                 <div id="topBar">
@@ -140,6 +134,9 @@ class ProfilePage extends Component {
                 </div>
                 <div className='charts'>
                     <SkillChart rawData={u.skills}/>
+                    <AuditChart chart={{class: "auditChart",divClass: "AuditD",labelClass: "auditL",labelText:"Audits received/done"}} 
+                        data={u.auditData}
+                    />
                     <TransactionChart chart={{class: "transactionChart",divClass: "TransactionD",labelClass: "transactionL",labelText:"XP earned by project"}} 
                         data={u.chartData} color={getRandomColor()}
                     />
